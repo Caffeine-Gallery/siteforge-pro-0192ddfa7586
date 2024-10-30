@@ -34,9 +34,11 @@ function initDragAndDrop() {
     });
 
     const canvas = document.getElementById('canvas');
-    canvas.addEventListener('dragover', handleDragOver);
-    canvas.addEventListener('drop', handleDrop);
-    canvas.addEventListener('click', handleCanvasClick);
+    if (canvas) {
+        canvas.addEventListener('dragover', handleDragOver);
+        canvas.addEventListener('drop', handleDrop);
+        canvas.addEventListener('click', handleCanvasClick);
+    }
 }
 
 function handleDragStart(e) {
@@ -58,6 +60,9 @@ function handleDrop(e) {
     const type = e.dataTransfer.getData('text/plain');
     const element = createCanvasElement(type);
     
+    const canvas = document.getElementById('canvas');
+    if (!canvas) return;
+
     const canvasRect = canvas.getBoundingClientRect();
     const x = e.clientX - canvasRect.left;
     const y = e.clientY - canvasRect.top;
@@ -202,6 +207,7 @@ function selectElement(e) {
 }
 
 function handleCanvasClick(e) {
+    const canvas = document.getElementById('canvas');
     if (e.target === canvas) {
         if (state.selectedElement) {
             state.selectedElement.classList.remove('selected');
@@ -220,12 +226,18 @@ function initPropertyPanel() {
 }
 
 function showProperties() {
-    document.getElementById('properties-panel').classList.add('active');
-    updatePropertyInputs();
+    const propertiesPanel = document.getElementById('properties-panel');
+    if (propertiesPanel) {
+        propertiesPanel.classList.add('active');
+        updatePropertyInputs();
+    }
 }
 
 function hideProperties() {
-    document.getElementById('properties-panel').classList.remove('active');
+    const propertiesPanel = document.getElementById('properties-panel');
+    if (propertiesPanel) {
+        propertiesPanel.classList.remove('active');
+    }
 }
 
 function updatePropertyInputs() {
@@ -233,23 +245,33 @@ function updatePropertyInputs() {
     
     const styles = window.getComputedStyle(state.selectedElement);
     
-    document.getElementById('element-width').value = styles.width;
-    document.getElementById('element-height').value = styles.height;
-    document.getElementById('element-padding').value = styles.padding;
-    document.getElementById('element-margin').value = styles.margin;
-    document.getElementById('element-bgcolor').value = rgbToHex(styles.backgroundColor);
-    document.getElementById('element-border-color').value = rgbToHex(styles.borderColor);
-    document.getElementById('element-border-width').value = parseInt(styles.borderWidth);
-    document.getElementById('element-border-radius').value = parseInt(styles.borderRadius);
-    document.getElementById('element-font-family').value = styles.fontFamily.split(',')[0].replace(/['"]+/g, '');
-    document.getElementById('element-font-size').value = parseInt(styles.fontSize);
-    document.getElementById('element-color').value = rgbToHex(styles.color);
-    document.getElementById('element-opacity').value = styles.opacity;
+    const updateInput = (id, value) => {
+        const input = document.getElementById(id);
+        if (input) input.value = value;
+    };
+
+    updateInput('element-width', styles.width);
+    updateInput('element-height', styles.height);
+    updateInput('element-padding', styles.padding);
+    updateInput('element-margin', styles.margin);
+    updateInput('element-bgcolor', rgbToHex(styles.backgroundColor));
+    updateInput('element-border-color', rgbToHex(styles.borderColor));
+    updateInput('element-border-width', parseInt(styles.borderWidth));
+    updateInput('element-border-radius', parseInt(styles.borderRadius));
+    updateInput('element-font-family', styles.fontFamily.split(',')[0].replace(/['"]+/g, ''));
+    updateInput('element-font-size', parseInt(styles.fontSize));
+    updateInput('element-color', rgbToHex(styles.color));
+    updateInput('element-opacity', styles.opacity);
     
     // Update color previews
-    document.getElementById('bg-color-preview').style.backgroundColor = styles.backgroundColor;
-    document.getElementById('border-color-preview').style.backgroundColor = styles.borderColor;
-    document.getElementById('font-color-preview').style.backgroundColor = styles.color;
+    const updateColorPreview = (id, color) => {
+        const preview = document.getElementById(id);
+        if (preview) preview.style.backgroundColor = color;
+    };
+
+    updateColorPreview('bg-color-preview', styles.backgroundColor);
+    updateColorPreview('border-color-preview', styles.borderColor);
+    updateColorPreview('font-color-preview', styles.color);
 }
 
 function updateElementProperty(e) {
@@ -267,11 +289,11 @@ function updateElementProperty(e) {
             break;
         case 'bgcolor':
             state.selectedElement.style.backgroundColor = value;
-            document.getElementById('bg-color-preview').style.backgroundColor = value;
+            updateColorPreview('bg-color-preview', value);
             break;
         case 'border-color':
             state.selectedElement.style.borderColor = value;
-            document.getElementById('border-color-preview').style.backgroundColor = value;
+            updateColorPreview('border-color-preview', value);
             break;
         case 'border-width':
             state.selectedElement.style.borderWidth = value + 'px';
@@ -287,7 +309,7 @@ function updateElementProperty(e) {
             break;
         case 'color':
             state.selectedElement.style.color = value;
-            document.getElementById('font-color-preview').style.backgroundColor = value;
+            updateColorPreview('font-color-preview', value);
             break;
         case 'opacity':
             state.selectedElement.style.opacity = value;
@@ -303,6 +325,11 @@ function updateElementProperty(e) {
         property: property,
         value: value
     });
+}
+
+function updateColorPreview(id, color) {
+    const preview = document.getElementById(id);
+    if (preview) preview.style.backgroundColor = color;
 }
 
 function applyShadow(value) {
@@ -325,8 +352,10 @@ function applyShadow(value) {
 
 // History management
 function initHistory() {
-    document.getElementById('undoBtn').addEventListener('click', undo);
-    document.getElementById('redoBtn').addEventListener('click', redo);
+    const undoBtn = document.getElementById('undoBtn');
+    const redoBtn = document.getElementById('redoBtn');
+    if (undoBtn) undoBtn.addEventListener('click', undo);
+    if (redoBtn) redoBtn.addEventListener('click', redo);
 }
 
 function addToHistory(action) {
@@ -357,15 +386,16 @@ function redo() {
 function revertAction(action) {
     switch(action.type) {
         case 'add':
-            document.getElementById(action.elementId).remove();
+            const elementToRemove = document.getElementById(action.elementId);
+            if (elementToRemove) elementToRemove.remove();
             break;
         case 'modify':
             const element = document.getElementById(action.elementId);
-            element.style[action.property] = action.oldValue;
+            if (element) element.style[action.property] = action.oldValue;
             break;
         case 'move':
             const movedElement = document.getElementById(action.elementId);
-            movedElement.style.transform = `translate3d(${action.oldPosition.x}px, ${action.oldPosition.y}px, 0)`;
+            if (movedElement) movedElement.style.transform = `translate3d(${action.oldPosition.x}px, ${action.oldPosition.y}px, 0)`;
             break;
     }
 }
@@ -375,21 +405,24 @@ function applyAction(action) {
         case 'add':
             const newElement = document.createElement('div');
             newElement.outerHTML = action.element;
-            document.getElementById('canvas').appendChild(newElement);
+            const canvas = document.getElementById('canvas');
+            if (canvas) canvas.appendChild(newElement);
             break;
         case 'modify':
             const element = document.getElementById(action.elementId);
-            element.style[action.property] = action.value;
+            if (element) element.style[action.property] = action.value;
             break;
         case 'move':
             const movedElement = document.getElementById(action.elementId);
-            movedElement.style.transform = `translate3d(${action.position.x}px, ${action.position.y}px, 0)`;
+            if (movedElement) movedElement.style.transform = `translate3d(${action.position.x}px, ${action.position.y}px, 0)`;
             break;
     }
 }
 
 function updateHistoryPanel() {
     const historyList = document.querySelector('.history-list');
+    if (!historyList) return;
+
     historyList.innerHTML = '';
     
     state.history.forEach((action, index) => {
@@ -407,18 +440,20 @@ function updateHistoryPanel() {
 function setDeviceView(device) {
     state.deviceView = device;
     const canvas = document.getElementById('canvas');
-    canvas.className = device;
+    if (canvas) canvas.className = device;
     
     document.querySelectorAll('.device-button').forEach(button => {
         button.classList.remove('active');
     });
-    document.querySelector(`.device-button[data-device="${device}"]`).classList.add('active');
+    const activeButton = document.querySelector(`.device-button[data-device="${device}"]`);
+    if (activeButton) activeButton.classList.add('active');
 }
 
 // Grid toggle
 function toggleGrid() {
     state.showGrid = !state.showGrid;
-    document.querySelector('.grid-overlay').classList.toggle('active');
+    const gridOverlay = document.querySelector('.grid-overlay');
+    if (gridOverlay) gridOverlay.classList.toggle('active');
 }
 
 // Save and load functions
@@ -444,11 +479,15 @@ async function loadSavedDesign() {
         if (savedDesign) {
             try {
                 const design = JSON.parse(savedDesign);
-                design.elements.forEach(el => {
-                    const element = createCanvasElement(el.type);
-                    element.style.cssText = el.styles;
-                    canvas.appendChild(element);
-                });
+                const canvas = document.getElementById('canvas');
+                if (canvas) {
+                    canvas.innerHTML = ''; // Clear existing elements
+                    design.elements.forEach(el => {
+                        const element = createCanvasElement(el.type);
+                        element.style.cssText = el.styles;
+                        canvas.appendChild(element);
+                    });
+                }
                 
                 state.elements = design.elements;
                 state.history = design.history;
@@ -471,24 +510,26 @@ function previewDesign() {
     const previewWindow = window.open('', '_blank');
     const canvas = document.getElementById('canvas');
     
-    previewWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Preview</title>
-            <style>
-                ${document.querySelector('style').textContent}
-                .canvas-element { position: relative !important; }
-                .element-controls { display: none; }
-            </style>
-        </head>
-        <body>
-            <div id="canvas" class="${state.deviceView}">
-                ${canvas.innerHTML}
-            </div>
-        </body>
-        </html>
-    `);
+    if (previewWindow && canvas) {
+        previewWindow.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Preview</title>
+                <style>
+                    ${document.querySelector('style').textContent}
+                    .canvas-element { position: relative !important; }
+                    .element-controls { display: none; }
+                </style>
+            </head>
+            <body>
+                <div id="canvas" class="${state.deviceView}">
+                    ${canvas.innerHTML}
+                </div>
+            </body>
+            </html>
+        `);
+    }
 }
 
 async function publishDesign() {
@@ -515,13 +556,23 @@ function rgbToHex(rgb) {
 }
 
 function initButtons() {
-    document.getElementById('toggleGridBtn').addEventListener('click', toggleGrid);
-    document.getElementById('previewBtn').addEventListener('click', previewDesign);
-    document.getElementById('publishBtn').addEventListener('click', publishDesign);
-    document.getElementById('saveBtn').addEventListener('click', saveDesign);
-    document.getElementById('loadBtn').addEventListener('click', loadSavedDesign);
+    const toggleGridBtn = document.getElementById('toggleGridBtn');
+    const previewBtn = document.getElementById('previewBtn');
+    const publishBtn = document.getElementById('publishBtn');
+    const saveBtn = document.getElementById('saveBtn');
+    const loadBtn = document.getElementById('loadBtn');
+
+    if (toggleGridBtn) toggleGridBtn.addEventListener('click', toggleGrid);
+    if (previewBtn) previewBtn.addEventListener('click', previewDesign);
+    if (publishBtn) publishBtn.addEventListener('click', publishDesign);
+    if (saveBtn) saveBtn.addEventListener('click', saveDesign);
+    if (loadBtn) loadBtn.addEventListener('click', loadSavedDesign);
+
     document.querySelectorAll('.device-button').forEach(button => {
-        button.addEventListener('click', (e) => setDeviceView(e.target.closest('.device-button').dataset.device));
+        button.addEventListener('click', (e) => {
+            const deviceType = e.target.closest('.device-button').dataset.device;
+            if (deviceType) setDeviceView(deviceType);
+        });
     });
 }
 

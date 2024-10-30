@@ -30,22 +30,27 @@ function initBuilder() {
 function initDragAndDrop() {
     document.querySelectorAll('.element').forEach(element => {
         element.addEventListener('dragstart', handleDragStart);
+        element.addEventListener('dragend', handleDragEnd);
     });
 
     const canvas = document.getElementById('canvas');
     canvas.addEventListener('dragover', handleDragOver);
     canvas.addEventListener('drop', handleDrop);
     canvas.addEventListener('click', handleCanvasClick);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', endDrag);
 }
 
 function handleDragStart(e) {
     e.dataTransfer.setData('text/plain', e.target.dataset.type);
+    e.target.style.opacity = '0.5';
+}
+
+function handleDragEnd(e) {
+    e.target.style.opacity = '1';
 }
 
 function handleDragOver(e) {
     e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
 }
 
 function handleDrop(e) {
@@ -82,6 +87,7 @@ function createCanvasElement(type) {
     element.className = 'canvas-element';
     element.id = 'element-' + Date.now();
     element.dataset.type = type;
+    element.draggable = true;
     
     // Add element controls
     const controls = document.createElement('div');
@@ -129,10 +135,8 @@ function createCanvasElement(type) {
                 </div>
             `;
             break;
-        // Add more cases for other element types
     }
     
-    // Add event listeners
     element.addEventListener('mousedown', startDragging);
     element.addEventListener('click', selectElement);
     
@@ -146,6 +150,9 @@ function startDragging(e) {
         state.selectedElement = e.target;
         state.initialX = e.clientX - state.xOffset;
         state.initialY = e.clientY - state.yOffset;
+        
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', endDrag);
     }
 }
 
@@ -167,6 +174,9 @@ function endDrag(e) {
         state.initialX = state.currentX;
         state.initialY = state.currentY;
         state.isDragging = false;
+        
+        document.removeEventListener('mousemove', drag);
+        document.removeEventListener('mouseup', endDrag);
         
         addToHistory({
             type: 'move',
@@ -508,6 +518,8 @@ function initButtons() {
     document.getElementById('toggleGridBtn').addEventListener('click', toggleGrid);
     document.getElementById('previewBtn').addEventListener('click', previewDesign);
     document.getElementById('publishBtn').addEventListener('click', publishDesign);
+    document.getElementById('saveBtn').addEventListener('click', saveDesign);
+    document.getElementById('loadBtn').addEventListener('click', loadSavedDesign);
     document.querySelectorAll('.device-button').forEach(button => {
         button.addEventListener('click', (e) => setDeviceView(e.target.closest('.device-button').dataset.device));
     });

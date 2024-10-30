@@ -1,3 +1,5 @@
+import Bool "mo:base/Bool";
+import Error "mo:base/Error";
 import Hash "mo:base/Hash";
 
 import Array "mo:base/Array";
@@ -50,11 +52,23 @@ actor WebBuilder {
         designs := HashMap.fromIter<Principal, Text>(designEntries.vals(), 10, Principal.equal, Principal.hash);
     };
 
+    // Helper function to validate JSON
+    func isValidJSON(str: Text) : Bool {
+        let trimmed = Text.trim(str, #text " \n\t\r");
+        (Text.startsWith(trimmed, #text "{") and Text.endsWith(trimmed, #text "}")) or
+        (Text.startsWith(trimmed, #text "[") and Text.endsWith(trimmed, #text "]"))
+    };
+
     // Save a design
     public shared(msg) func saveDesign(designData: Text) : async () {
         let caller = msg.caller;
-        designs.put(caller, designData);
-        Debug.print("Design saved for user: " # Principal.toText(caller));
+        // Validate JSON before saving
+        if (isValidJSON(designData)) {
+            designs.put(caller, designData);
+            Debug.print("Design saved for user: " # Principal.toText(caller));
+        } else {
+            Debug.print("Invalid JSON data. Design not saved for user: " # Principal.toText(caller));
+        };
     };
 
     // Load a design
@@ -68,7 +82,13 @@ actor WebBuilder {
             };
             case (?d) {
                 Debug.print("Design loaded for user: " # Principal.toText(caller));
-                ?d
+                // Validate JSON
+                if (isValidJSON(d)) {
+                    ?d
+                } else {
+                    Debug.print("Invalid JSON data for user: " # Principal.toText(caller));
+                    null
+                }
             };
         };
     };
@@ -76,11 +96,17 @@ actor WebBuilder {
     // Publish a design
     public shared(msg) func publishDesign(designData: Text) : async Text {
         let caller = msg.caller;
-        // In a real-world scenario, you would generate a unique URL and store the design data
-        // For this example, we'll just return a mock URL
-        let mockUrl = "https://webbuilder.ic0.app/" # Principal.toText(caller);
-        Debug.print("Design published for user: " # Principal.toText(caller) # " at URL: " # mockUrl);
-        mockUrl
+        // Validate JSON before publishing
+        if (isValidJSON(designData)) {
+            // In a real-world scenario, you would generate a unique URL and store the design data
+            // For this example, we'll just return a mock URL
+            let mockUrl = "https://webbuilder.ic0.app/" # Principal.toText(caller);
+            Debug.print("Design published for user: " # Principal.toText(caller) # " at URL: " # mockUrl);
+            mockUrl
+        } else {
+            Debug.print("Invalid JSON data. Design not published for user: " # Principal.toText(caller));
+            "Error: Invalid design data"
+        }
     };
 
     // Helper function to convert Principal to Text

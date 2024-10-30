@@ -432,16 +432,23 @@ async function loadSavedDesign() {
     try {
         const savedDesign = await backend.loadDesign();
         if (savedDesign) {
-            const design = JSON.parse(savedDesign);
-            design.elements.forEach(el => {
-                const element = createCanvasElement(el.type);
-                element.style.cssText = el.styles;
-                canvas.appendChild(element);
-            });
-            
-            state.elements = design.elements;
-            state.history = design.history;
-            setDeviceView(design.deviceView);
+            try {
+                const design = JSON.parse(savedDesign);
+                design.elements.forEach(el => {
+                    const element = createCanvasElement(el.type);
+                    element.style.cssText = el.styles;
+                    canvas.appendChild(element);
+                });
+                
+                state.elements = design.elements;
+                state.history = design.history;
+                setDeviceView(design.deviceView);
+            } catch (parseError) {
+                console.error('Error parsing design data:', parseError);
+                alert('Failed to parse design data. Please try again.');
+            }
+        } else {
+            console.log('No saved design found.');
         }
     } catch (error) {
         console.error('Error loading design:', error);
@@ -502,7 +509,7 @@ function initButtons() {
     document.getElementById('previewBtn').addEventListener('click', previewDesign);
     document.getElementById('publishBtn').addEventListener('click', publishDesign);
     document.querySelectorAll('.device-button').forEach(button => {
-        button.addEventListener('click', (e) => setDeviceView(e.target.dataset.device));
+        button.addEventListener('click', (e) => setDeviceView(e.target.closest('.device-button').dataset.device));
     });
 }
 

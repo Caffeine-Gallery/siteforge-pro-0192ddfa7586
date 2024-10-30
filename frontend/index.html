@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Website Builder</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div id="top-bar">
+        <div class="logo">WebBuilder Pro</div>
+        <div class="responsive-controls">
+            <button class="device-button" data-device="desktop" title="Desktop View">
+                <i class="fas fa-desktop"></i>
+            </button>
+            <button class="device-button" data-device="tablet" title="Tablet View">
+                <i class="fas fa-tablet-alt"></i>
+            </button>
+            <button class="device-button" data-device="mobile" title="Mobile View">
+                <i class="fas fa-mobile-alt"></i>
+            </button>
+        </div>
+        <div class="top-controls">
+            <button class="button button-secondary" id="toggleGridBtn">
+                <i class="fas fa-th"></i> Grid
+            </button>
+            <button class="button button-secondary" id="undoBtn">
+                <i class="fas fa-undo"></i> Undo
+            </button>
+            <button class="button button-secondary" id="redoBtn">
+                <i class="fas fa-redo"></i> Redo
+            </button>
+            <button class="button button-secondary" id="previewBtn">
+                <i class="fas fa-eye"></i> Preview
+            </button>
+            <button class="button button-primary" id="publishBtn">
+                <i class="fas fa-cloud-upload-alt"></i> Publish
+            </button>
+        </div>
+    </div>
+
+    <div id="sidebar">
+        <div class="sidebar-section">
+            <div class="sidebar-title">Layout Elements</div>
+            <div class="element-grid">
+                <div class="element" draggable="true" data-type="section">
+                    <i class="fas fa-columns"></i>
+                    <span class="element-label">Section</span>
+                </div>
+                <div class="element" draggable="true" data-type="container">
+                    <i class="fas fa-box"></i>
+                    <span class="element-label">Container</span>
+                </div>
+                <div class="element" draggable="true" data-type="grid">
+                    <i class="fas fa-th"></i>
+                    <span class="element-label">Grid</span>
+                </div>
+                <div class="element" draggable="true" data-type="spacer">
+                    <i class="fas fa-arrows-alt-v"></i>
+                    <span class="element-label">Spacer</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Basic Elements</div>
+            <div class="element-grid">
+                <div class="element" draggable="true" data-type="heading">
+                    <i class="fas fa-heading"></i>
+                    <span class="element-label">Heading</span>
+                </div>
+                <div class="element" draggable="true" data-type="text">
+                    <i class="fas fa-font"></i>
+                    <span class="element-label">Text</span>
+                </div>
+                <div class="element" draggable="true" data-type="button">
+                    <i class="fas fa-square"></i>
+                    <span class="element-label">Button</span>
+                </div>
+                <div class="element" draggable="true" data-type="image">
+                    <i class="fas fa-image"></i>
+                    <span class="element-label">Image</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Advanced Elements</div>
+            <div class="element-grid">
+                <div class="element" draggable="true" data-type="form">
+                    <i class="fas fa-wpforms"></i>
+                    <span class="element-label">Form</span>
+                </div>
+                <div class="element" draggable="true" data-type="gallery">
+                    <i class="fas fa-images"></i>
+                    <span class="element-label">Gallery</span>
+                </div>
+                <div class="element" draggable="true" data-type="video">
+                    <i class="fas fa-video"></i>
+                    <span class="element-label">Video</span>
+                </div>
+                <div class="element" draggable="true" data-type="map">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span class="element-label">Map</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-title">Widgets</div>
+            <div class="element-grid">
+                <div class="element" draggable="true" data-type="social">
+                    <i class="fas fa-share-alt"></i>
+                    <span class="element-label">Social</span>
+                </div>
+                <div class="element" draggable="true" data-type="countdown">
+                    <i class="fas fa-clock"></i>
+                    <span class="element-label">Countdown</span>
+                </div>
+                <div class="element" draggable="true" data-type="reviews">
+                    <i class="fas fa-star"></i>
+                    <span class="element-label">Reviews</span>
+                </div>
+                <div class="element" draggable="true" data-type="chat">
+                    <i class="fas fa-comments"></i>
+                    <span class="element-label">Chat</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="canvas-container">
+        <div id="canvas">
+            <div class="grid-overlay">
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+                <div class="grid-column"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="properties-panel">
+        <div class="property-group">
+            <div class="property-group-title">Size & Position</div>
+            <div class="property-row">
+                <div class="property-label">Width</div>
+                <input type="text" class="property-input" id="element-width">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Height</div>
+                <input type="text" class="property-input" id="element-height">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Padding</div>
+                <input type="text" class="property-input" id="element-padding">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Margin</div>
+                <input type="text" class="property-input" id="element-margin">
+            </div>
+        </div>
+
+        <div class="property-group">
+            <div class="property-group-title">Style</div>
+            <div class="property-row">
+                <div class="property-label">Background Color</div>
+                <div class="color-picker-wrapper">
+                    <div class="color-preview" id="bg-color-preview"></div>
+                    <input type="color" class="property-input" id="element-bgcolor">
+                </div>
+            </div>
+            <div class="property-row">
+                <div class="property-label">Border Color</div>
+                <div class="color-picker-wrapper">
+                    <div class="color-preview" id="border-color-preview"></div>
+                    <input type="color" class="property-input" id="element-border-color">
+                </div>
+            </div>
+            <div class="property-row">
+                <div class="property-label">Border Width</div>
+                <input type="number" class="property-input" id="element-border-width" min="0" max="20">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Border Radius</div>
+                <input type="number" class="property-input" id="element-border-radius" min="0" max="50">
+            </div>
+        </div>
+
+        <div class="property-group">
+            <div class="property-group-title">Typography</div>
+            <div class="property-row">
+                <div class="property-label">Font Family</div>
+                <select class="property-input" id="element-font-family">
+                    <option value="Arial">Arial</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times New Roman">Times New Roman</option>
+                    <option value="Georgia">Georgia</option>
+                </select>
+            </div>
+            <div class="property-row">
+                <div class="property-label">Font Size</div>
+                <input type="number" class="property-input" id="element-font-size" min="8" max="72">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Font Color</div>
+                <div class="color-picker-wrapper">
+                    <div class="color-preview" id="font-color-preview"></div>
+                    <input type="color" class="property-input" id="element-color">
+                </div>
+            </div>
+        </div>
+
+        <div class="property-group">
+            <div class="property-group-title">Effects</div>
+            <div class="property-row">
+                <div class="property-label">Opacity</div>
+                <input type="range" class="property-input" id="element-opacity" min="0" max="1" step="0.1">
+            </div>
+            <div class="property-row">
+                <div class="property-label">Shadow</div>
+                <select class="property-input" id="element-shadow">
+                    <option value="none">None</option>
+                    <option value="light">Light</option>
+                    <option value="medium">Medium</option>
+                    <option value="strong">Strong</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div id="history-panel">
+        <div class="history-list"></div>
+    </div>
+
+    <script type="module" src="index.js"></script>
+</body>
+</html>

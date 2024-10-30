@@ -1,0 +1,6 @@
+service : {
+  loadDesign: () -> (opt text);
+  principalToText: (principal) -> (text);
+  publishDesign: (text) -> (text);
+  saveDesign: (text) -> ();
+}
